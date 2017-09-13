@@ -10,7 +10,7 @@ public class Main {
     public static final boolean RANDOM_SHIFT = false;
 
     public static void main(String[] args) throws FileNotFoundException {
-        Decrypter d = new Decrypter(1);
+        Decrypter d = new Decrypter(2);
 
         ArrayList<String> encryptedMessages = new ArrayList<String>();
         encryptedMessages.add(tryInput("Hello, World! this is so cool. " +
