@@ -1,42 +1,72 @@
-import java.io.FileNotFoundException;
 import java.util.ArrayList;
+import java.util.Collections;
 
 /**
  * Created by liamkreiss on 9/3/17.
  */
 public class Main {
 
-    public static final int ALPHABET_SIZE = 26;
     public static final boolean RANDOM_SHIFT = false;
+    public static final int NUM_BEST_SOLUTIONS = 10;
 
-    public static void main(String[] args) throws FileNotFoundException {
-        Decrypter d = new Decrypter(2);
+    public static void main(String[] args) throws Exception {
+        Language english = new English();
+        Language spanish = new Spanish();
 
-        ArrayList<String> encryptedMessages = new ArrayList<String>();
-        encryptedMessages.add(tryInput("Hello, World! this is so cool. " +
-                "I wonder if it will work if I write a ton of words. I do have to make sure that the words " +
-                "are varied though, because I can't just repeat the same words over and over again and expect " +
-                "the computer to learn any new information.", 100));
-        encryptedMessages.add(tryInput("Once upon a time, there was a frisbee player named Mason. " +
-                "Mason loved to take long walks on the beach and eat pumpkin pie with his friends.", 10));
-        encryptedMessages.add(tryInput("One day, Mason encountered a turtle named Sydney. " +
-                "The turtle lived near the water and decided to swim out into the ocean to see if she " +
-                "could catch any fish.", -10));
-        encryptedMessages.add(tryInput("After returning from the fishing trip, Sydney noticed Mason " +
-                "eating his pumpkin pie on the beach. She said: 'Hey there. Can i have some of that pie?'", 0));
+        String spanishSentence = "Tengo hambre. Quiero comer un burrito. yo fui a la parcela de calabazas ayer";
+        String englishSentence = "I am hungry. I want to eat a burrito. I went to the pumpkin patch yesterday";
 
+        Decrypter englishDecrypter = new Decrypter(english);
+        Decrypter spanishDecrypter = new Decrypter(spanish);
 
-        for (String s : encryptedMessages) {
-            System.out.println(d.decrypt(s));
+        String encryptedEnglishSentence = caesarEncrypt(english,  englishSentence, 6);
+        String encryptedSpanishSentence = caesarEncrypt(spanish,  spanishSentence, 6);
+
+        //choose language
+        String encryptedSentence = encryptedSpanishSentence;
+
+        ArrayList<String> encryptedMessagesEnglish = new ArrayList<String>();
+        encryptedMessagesEnglish.add(encryptedSentence);
+
+        ArrayList<String> encryptedMessagesSpanish = new ArrayList<String>();
+        encryptedMessagesSpanish.add(encryptedSentence);
+
+        ArrayList<ArrayList<Solution>> allSolutionsList = new ArrayList<>();
+        for (String s : encryptedMessagesEnglish) {
+            allSolutionsList.add(englishDecrypter.decrypt(s));
+        }
+
+        for (String s : encryptedMessagesSpanish) {
+            allSolutionsList.add(spanishDecrypter.decrypt(s));
+        }
+
+        System.out.println(getNBestSolutions(NUM_BEST_SOLUTIONS, allSolutionsList, encryptedSentence));
+    }
+
+    public static String caesarEncrypt(Language language, String message, int n) {
+        if (RANDOM_SHIFT) {
+            return new CaesarCipherEncrypter(language).encrypt(message);
+        } else {
+            return new CaesarCipherEncrypter(n, language).encrypt(message);
         }
     }
 
-    public static String tryInput(String message, int n) {
-        if (RANDOM_SHIFT) {
-            return new CaesarCipherEncrypter(ALPHABET_SIZE).encrypt(message);
-        } else {
-            return new CaesarCipherEncrypter(n, ALPHABET_SIZE).encrypt(message);
+    private static String getNBestSolutions(int numBestSolutions, ArrayList<ArrayList<Solution>> allSolutionLists, String origEncryptedMessage) {
+        String output = String.format("Original Encrypted Message: %s\n", origEncryptedMessage);
+        ArrayList<Solution> allSolutions = new ArrayList<>();
+        for (ArrayList<Solution> solution : allSolutionLists) {
+            for (Solution s : solution) {
+                allSolutions.add(s);
+            }
         }
+
+        Collections.sort(allSolutions);
+
+        for (int i = 0; i < numBestSolutions; i++) {
+            output += allSolutions.get(i).toString();
+        }
+
+        return output;
     }
 
 }

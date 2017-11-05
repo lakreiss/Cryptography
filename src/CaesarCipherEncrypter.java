@@ -3,21 +3,21 @@ import java.util.Random;
 /**
  * Created by liamkreiss on 9/3/17.
  */
-public class CaesarCipherEncrypter extends SubstitutionCipher{
+public class CaesarCipherEncrypter {
     private int numShift;
-    private int alphabet_size;
+    private Language language;
 
     //Creates a random Caesar Cipher Encrypter
-    public CaesarCipherEncrypter(int alphabet_size) {
-        this((new Random()).nextInt(25) + 1, alphabet_size);
+    public CaesarCipherEncrypter(Language language) {
+        this((new Random()).nextInt(language.getAlphabetSize() - 1) + 1, language);
     }
 
-    public CaesarCipherEncrypter(int n, int alphabet_size) {
-        this.alphabet_size = alphabet_size;
+    public CaesarCipherEncrypter(int n, Language language) {
+        this.language = language;
         if (n < 0) {
-            this.numShift = (n % 26) + alphabet_size;
+            this.numShift = (n % language.getAlphabetSize()) + language.getAlphabetSize();
         } else {
-            this.numShift = n % 26;
+            this.numShift = n % language.getAlphabetSize();
         }
     }
 
@@ -25,8 +25,9 @@ public class CaesarCipherEncrypter extends SubstitutionCipher{
         s = s.toLowerCase();
         String output = "";
         for (char c : s.toCharArray()) {
-            if (c > 96 && c < 123) {
-                output += "" + alphabet.get(((c + numShift) - 97) % 26);
+            if (language.isValidLetter(c)) {
+                int newValue = (language.getAlphabetValue(c) + numShift) % language.getAlphabetSize();
+                output += "" + language.getAlphabetLetter(newValue);
             } else {
                 output += "" + c;
             }

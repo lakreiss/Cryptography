@@ -8,11 +8,13 @@ public class Solution implements Comparable{
     protected String originalMessage;
     protected String decryptedMessage;
     protected double score;
+    protected Language language;
 
-    public Solution(String originalMessage, String decryptedMessage, double score) {
+    public Solution(String originalMessage, String decryptedMessage, double score, Language language) {
         this.originalMessage = originalMessage;
         this.decryptedMessage = decryptedMessage;
         this.score = score;
+        this.language = language;
     }
 
     @Override
@@ -30,7 +32,7 @@ public class Solution implements Comparable{
     }
 
     public String toString() {
-        return String.format("Score: %f\nAnswer: %s\n", this.score, this.decryptedMessage);
+        return String.format("Score: %f *** Language: %s\nAnswer: %s\n", this.score, this.language.getName(), this.decryptedMessage);
     }
 
 //    @Override
